@@ -1,0 +1,40 @@
+name: URLChecker
+
+on:
+  workflow_dispatch:
+
+  push:
+
+  schedule:
+    - cron: '30 20 * * 0-4'
+
+jobs:
+  Check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 🏭
+        uses: actions/setup-python@v5
+        with:
+          check-latest: true
+          python-version: '3.x'
+
+      - name: Install Python dependencies 📦
+        run: 
+          pip install requests
+
+      - name: Check 📡
+        id: check
+        run: |
+          python3 Check.py || echo "Exit code was $?"
+          if [ -f outputs.txt ]; then
+            echo "upload=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Artifact 📤
+        uses: actions/upload-artifact@v4
+        if: steps.check.outputs.upload == 'true'
+        with:
+          name: outputs
+          path: outputs.txt

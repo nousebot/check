@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>链接猜测与检测工具</title>
+<style>
+    #linkInput {
+        width: 80%;
+    }
+</style>
+</head>
+<body>
+  <h1>链接猜测与检测工具</h1>
+  <p>请输入链接和数字范围：</p>
+  <div>模板链接：<input type="text" id="linkInput" placeholder="输入链接，使用{}表示要猜测的部分"><br></div>
+  <div>起始数字：<input type="number" id="startRange" placeholder="起始数字"><br></div>
+  <div>结束数字：<input type="number" id="endRange" placeholder="结束数字"><br></div>
+  <button onclick="guessAndCheckLink()">猜测并检测链接</button>
+  <p></p>
+  <div>当前链接：<p id="currentLink"></p></div>
+  <p>有效链接：</p>
+  <p id="validLinks"></p>
+
+  <script>
+    async function guessAndCheckLink() {
+      const linkInput = document.getElementById('linkInput').value;
+      const startRange = parseInt(document.getElementById('startRange').value);
+      const endRange = parseInt(document.getElementById('endRange').value);
+      document.querySelector('button').disabled = true;
+      document.getElementById('linkInput').disabled = true;
+      document.getElementById('startRange').disabled = true;
+      document.getElementById('endRange').disabled = true;
+      let validLinks = '';
+
+      for (let i = startRange; i <= endRange; i++) {
+        const guessedLink = linkInput.replace('{}', i);
+        document.getElementById('currentLink').innerText = guessedLink;
+        const response = await fetch(guessedLink, { method: 'HEAD' });
+
+        if (response.ok) {
+          validLinks += `${guessedLink}\n`;
+          document.getElementById('validLinks').innerText = validLinks;
+        }
+      }
+      document.querySelector('button').disabled = false;
+      document.getElementById('linkInput').disabled = false;
+      document.getElementById('startRange').disabled = false;
+      document.getElementById('endRange').disabled = false;
+    }
+  </script>
+</body>
+</html>
